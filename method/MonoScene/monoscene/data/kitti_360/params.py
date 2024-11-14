@@ -24,13 +24,6 @@ kitti_360_class_frequencies = np.array(
     ]
 )
 
-
-
-
-
-
-
-
 kitti_360_class_names = [
     "empty",
     "car",
@@ -50,5 +43,35 @@ kitti_360_class_names = [
     "pole",
     "traffic-sign",
     "other-structure",
+    "other-object",
+]
+
+kitti_360_unified_class_frequencies = np.array(
+    [
+        2305812911,
+        123212463,
+        96297,
+        4051087,   
+        45297267,
+        110397082,  
+        295883213,   
+        50037503,    
+        1561069,   
+        30516166,
+        1950115
+    ]
+)
+
+kitti_360_unified_class_names = [
+    "unlabeled",
+    "car",
+    "bicycle",
+    "motorcycle",
+    "person",
+    "road",
+    "sidewalk",
+    "other-ground",
+    "building",
+    "vegetation",
     "other-object",
 ]

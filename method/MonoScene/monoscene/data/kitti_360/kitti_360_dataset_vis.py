@@ -32,12 +32,13 @@ class Kitti360Dataset(Dataset):
         self.cam_k = self.get_cam_k()
         self.scans = []
         for sequence in sequences:
+            # 修改 glob_path，添加筛选条件
             glob_path = os.path.join(
-                self.root, "data_2d_raw", sequence, "image_00/data_rect", "*.png"
+                self.root, "data_2d_raw", sequence, "image_00/data_rect", "*[0-9][0-9][0-9][0-9][05].png"
             )
             for img_path in glob.glob(glob_path):
                 self.scans.append({"img_path": img_path, "sequence": sequence})
-        self.scans = self.scans[:n_scans]
+        # self.scans = self.scans[:n_scans]
         self.normalize_rgb = transforms.Compose(
             [
                 transforms.ToTensor(),
