@@ -17,18 +17,6 @@
 
 [[PDF]](https://arxiv.org/abs/2306.09001)
 
-<p align="center">
-<img src="./teaser/kitti.gif" width="100%"/>
-<p align="center">SSCBench-KITTI-360</p>
-<img src="./teaser/nuscenes.gif" width="100%"/>
-<p align="center">SSCBench-nuScenes</p>
-<img src="./teaser/waymo.gif" width="100%"/>
-<p align="center">SSCBench-Waymo</p>
-<img src="./teaser/pandaset.gif" width="100%"/>
-<p align="center">🔥<strong>[New]</strong> SSCBench-PandaSet</p>
-</div>
-
-
 # News
 - [2024/09]: SSCBench is now available on [Hugging Face](https://huggingface.co/datasets/ai4ce/SSCBench)
 - [2024/08]: We release [SSCBench-Waymo](dataset/Waymo/) for academic usage.
