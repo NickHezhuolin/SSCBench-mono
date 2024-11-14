@@ -1,6 +1,7 @@
 #dataset: "NYU" # "kitti", "kitti_360"
 dataset: mix_dataset
 
+#mix_dataset: "kitti_360_waymo", "kitti_360_nuscenes", "waymo_nuscenes", "kitti_360_nuscenes_waymo"
 mix_dataset: "kitti_360_waymo"
 
 n_relations: 4
