@@ -1,6 +1,8 @@
 #dataset: "NYU" # "kitti", "kitti_360"
 dataset: mix_dataset
 
+mix_dataset: "kitti_360_waymo"
+
 n_relations: 4
 
 enable_log: true

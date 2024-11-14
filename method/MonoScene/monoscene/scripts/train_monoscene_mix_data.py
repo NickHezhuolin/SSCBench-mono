@@ -1,4 +1,3 @@
-# from monoscene.data.kitti_360.kitti_360_dm import Kitti360DataModule
 from monoscene.data.mix_dataset.mix_dataset_dm import MixDataModule
 from monoscene.data.kitti_360.params import (
     kitti_360_unified_class_frequencies,
@@ -32,7 +31,7 @@ hydra.output_subdir = None
 @hydra.main(config_name="../config/monoscene_mix_data.yaml")
 def main(config: DictConfig):
     exp_name = config.exp_prefix
-    exp_name += "_{}_{}".format(config.dataset, config.run)
+    exp_name += "_{}_{}_{}_".format(config.dataset, config.mix_dataset, config.run)
     exp_name += "_FrusSize_{}".format(config.frustum_size)
     exp_name += "_nRelations{}".format(config.n_relations)
     exp_name += "_WD{}_lr{}".format(config.weight_decay, config.lr)
@@ -61,7 +60,16 @@ def main(config: DictConfig):
     n_classes = len(nuscenes_class_names)
         
     # Mix class_frequencies
-    mix_class_frequencies = kitti_360_unified_class_frequencies + waymo_class_frequencies
+    if config.mix_dataset == "kitti_360_waymo":
+        mix_class_frequencies = kitti_360_unified_class_frequencies + waymo_class_frequencies
+    elif config.mix_dataset == "kitti_360_nuscenes":
+        mix_class_frequencies = kitti_360_unified_class_frequencies + nuscenes_class_frequencies
+    elif config.mix_dataset == "waymo_nuscenes":
+        mix_class_frequencies = waymo_class_frequencies + nuscenes_class_frequencies
+    elif config.mix_dataset == "kitti_360_nuscenes_waymo":
+        mix_class_frequencies = kitti_360_unified_class_frequencies + waymo_class_frequencies + nuscenes_class_frequencies
+    else:
+        raise ValueError(f"Unknown dataset frequencies combination: {config.mix_dataset}.")
     
     class_weights = torch.from_numpy(
         1 / np.log(mix_class_frequencies + 0.001)
@@ -77,6 +85,7 @@ def main(config: DictConfig):
         project_scale=project_scale,
         batch_size=int(config.batch_size / config.n_gpus),
         num_workers=int(config.num_workers_per_gpu),
+        dataset=config.mix_dataset
     )
 
 
