@@ -34,10 +34,11 @@ class UpSampleBN(nn.Module):
 
 class DecoderBN(nn.Module):
     def __init__(
-        self, num_features, bottleneck_features, out_feature, use_decoder=True
+        self, num_features, bottleneck_features, basemodel_name, out_feature, use_decoder=True
     ):
         super(DecoderBN, self).__init__()
         features = int(num_features)
+        self.basemodel_name = basemodel_name
         self.use_decoder = use_decoder
 
         self.conv2 = nn.Conv2d(
@@ -56,37 +57,23 @@ class DecoderBN(nn.Module):
         self.feature_1_1 = features // 32
 
         if self.use_decoder:
-            self.resize_output_1_1 = nn.Conv2d(
-                self.feature_1_1, self.out_feature_1_1, kernel_size=1
-            )
-            self.resize_output_1_2 = nn.Conv2d(
-                self.feature_1_2, self.out_feature_1_2, kernel_size=1
-            )
-            self.resize_output_1_4 = nn.Conv2d(
-                self.feature_1_4, self.out_feature_1_4, kernel_size=1
-            )
-            self.resize_output_1_8 = nn.Conv2d(
-                self.feature_1_8, self.out_feature_1_8, kernel_size=1
-            )
-            self.resize_output_1_16 = nn.Conv2d(
-                self.feature_1_16, self.out_feature_1_16, kernel_size=1
-            )
-
-            self.up16 = UpSampleBN(
-                skip_input=features + 224, output_features=self.feature_1_16
-            )
-            self.up8 = UpSampleBN(
-                skip_input=self.feature_1_16 + 80, output_features=self.feature_1_8
-            )
-            self.up4 = UpSampleBN(
-                skip_input=self.feature_1_8 + 48, output_features=self.feature_1_4
-            )
-            self.up2 = UpSampleBN(
-                skip_input=self.feature_1_4 + 32, output_features=self.feature_1_2
-            )
-            self.up1 = UpSampleBN(
-                skip_input=self.feature_1_2 + 3, output_features=self.feature_1_1
-            )
+            self.resize_output_1_1 = nn.Conv2d(self.feature_1_1, self.out_feature_1_1, kernel_size=1)
+            self.resize_output_1_2 = nn.Conv2d(self.feature_1_2, self.out_feature_1_2, kernel_size=1)
+            self.resize_output_1_4 = nn.Conv2d(self.feature_1_4, self.out_feature_1_4, kernel_size=1)
+            self.resize_output_1_8 = nn.Conv2d(self.feature_1_8, self.out_feature_1_8, kernel_size=1)
+            self.resize_output_1_16 = nn.Conv2d(self.feature_1_16, self.out_feature_1_16, kernel_size=1)
+            if self.basemodel_name == "b7":
+                self.up16 = UpSampleBN(skip_input=features + 224, output_features=self.feature_1_16)
+                self.up8 = UpSampleBN(skip_input=self.feature_1_16 + 80, output_features=self.feature_1_8)
+                self.up4 = UpSampleBN(skip_input=self.feature_1_8 + 48, output_features=self.feature_1_4)
+                self.up2 = UpSampleBN(skip_input=self.feature_1_4 + 32, output_features=self.feature_1_2)
+                self.up1 = UpSampleBN(skip_input=self.feature_1_2 + 3, output_features=self.feature_1_1)
+            elif self.basemodel_name == "b4":
+                self.up16 = UpSampleBN(skip_input=features + 160, output_features=self.feature_1_16)
+                self.up8 = UpSampleBN(skip_input=896 + 56, output_features=self.feature_1_8)
+                self.up4 = UpSampleBN(skip_input=448 + 32, output_features=self.feature_1_4)
+                self.up2 = UpSampleBN(skip_input=224 + 24, output_features=self.feature_1_2)
+                self.up1 = UpSampleBN(skip_input=112 + 3, output_features=self.feature_1_1)
         else:
             self.resize_output_1_1 = nn.Conv2d(3, out_feature, kernel_size=1)
             self.resize_output_1_2 = nn.Conv2d(32, out_feature * 2, kernel_size=1)
@@ -124,7 +111,10 @@ class DecoderBN(nn.Module):
                 features[6],
                 features[8],
             )
-            x_global = features[-1].reshape(bs, 2560, -1).mean(2)
+            if self.basemodel_name == "b7":
+                x_global = features[-1].reshape(bs, 2560, -1).mean(2)
+            elif self.basemodel_name == "b4":
+                x_global = features[-1].reshape(bs, 1792, -1).mean(2)
             return {
                 "1_1": self.resize_output_1_1(x_1_1),
                 "1_2": self.resize_output_1_2(x_1_2),
@@ -150,8 +140,9 @@ class Encoder(nn.Module):
 
 
 class UNet2D(nn.Module):
-    def __init__(self, backend, num_features, out_feature, use_decoder=True):
+    def __init__(self, backend, num_features, basemodel_name, out_feature, use_decoder=True):
         super(UNet2D, self).__init__()
+        self.basemodel_name = basemodel_name
         self.use_decoder = use_decoder
         self.encoder = Encoder(backend)
         self.decoder = DecoderBN(
@@ -159,6 +150,7 @@ class UNet2D(nn.Module):
             use_decoder=use_decoder,
             bottleneck_features=num_features,
             num_features=num_features,
+            basemodel_name=basemodel_name
         )
 
     def forward(self, x, **kwargs):
@@ -173,9 +165,13 @@ class UNet2D(nn.Module):
         return self.decoder.parameters()
 
     @classmethod
-    def build(cls, **kwargs):
-        basemodel_name = "tf_efficientnet_b7_ns"
-        num_features = 2560
+    def build(self, cls, **kwargs):
+        if self.basemodel_name == "b4":
+            basemodel_name = "tf_efficientnet_b4_ns"
+            num_features = 1792
+        if self.basemodel_name == "b7":
+            basemodel_name = "tf_efficientnet_b7_ns"
+            num_features = 2560
 
         print("Loading base model ()...".format(basemodel_name), end="")
         basemodel = torch.hub.load(

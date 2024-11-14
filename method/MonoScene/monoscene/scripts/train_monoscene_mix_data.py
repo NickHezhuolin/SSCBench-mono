@@ -122,6 +122,7 @@ def main(config: DictConfig):
         lr=config.lr,
         weight_decay=config.weight_decay,
         class_weights=class_weights,
+        basemodel_name=config.basemodel_name
     )
 
     if config.enable_log:

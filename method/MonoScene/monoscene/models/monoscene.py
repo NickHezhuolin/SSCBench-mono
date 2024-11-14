@@ -34,6 +34,7 @@ class MonoScene(pl.LightningModule):
         sem_scal_loss=True,
         lr=1e-4,
         weight_decay=1e-4,
+        basemodel_name="b7",
     ):
         super().__init__()
 
@@ -106,7 +107,16 @@ class MonoScene(pl.LightningModule):
                 full_scene_size=full_scene_size,
                 context_prior=context_prior,
             )
-        self.net_rgb = UNet2D.build(out_feature=feature, use_decoder=True)
+        elif self.dataset == "mix_dataset":
+            self.net_3d_decoder = UNet3DKitti(
+                self.n_classes,
+                nn.BatchNorm3d,
+                project_scale=project_scale,
+                feature=feature,
+                full_scene_size=full_scene_size,
+                context_prior=context_prior,
+            )
+        self.net_rgb = UNet2D.build(basemodel_name, out_feature=feature, use_decoder=True)
 
         # log hyperparameters
         self.save_hyperparameters()
@@ -343,6 +353,12 @@ class MonoScene(pl.LightningModule):
             return [optimizer], [scheduler]
 
         elif self.dataset == "waymo":
+            optimizer = torch.optim.AdamW(
+                self.parameters(), lr=self.lr, weight_decay=self.weight_decay
+            )
+            scheduler = MultiStepLR(optimizer, milestones=[20], gamma=0.1)
+            return [optimizer], [scheduler]
+        else:
             optimizer = torch.optim.AdamW(
                 self.parameters(), lr=self.lr, weight_decay=self.weight_decay
             )
