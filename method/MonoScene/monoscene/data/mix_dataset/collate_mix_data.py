@@ -39,7 +39,7 @@ def resize_and_pad(image, target_size):
     
     return padded_image
 
-def collate_fn(batch):
+def collate_fn_mix(batch):
     data = {}
     imgs = []
     frame_ids = []

@@ -1,11 +1,12 @@
 from torch.utils.data.dataloader import DataLoader
 from monoscene.data.kitti_360.kitti_360_dataset import Kitti360Dataset
 from monoscene.data.nuscenes.nuscenes_dataset import NuScenesDataset
+from monoscene.data.waymo.waymo_dataset import WaymoDataset
 import pytorch_lightning as pl
-from monoscene.data.mix_dataset.collate_mix_data import collate_fn
+from monoscene.data.kitti_360.collate import collate_fn
 from monoscene.data.utils.torch_util import worker_init_fn
 from torch.utils.data import ConcatDataset
-
+from monoscene.data.mix_dataset.collate_mix_data import collate_fn_mix
 
 class MixDataModule(pl.LightningDataModule):
     def __init__(
@@ -51,7 +52,19 @@ class MixDataModule(pl.LightningDataModule):
             color_jitter=(0.4, 0.4, 0.4),
         )
         
+        waymo_train_ds = WaymoDataset(
+            split="train",
+            root=self.waymo_dataset_root,
+            preprocess_root=self.waymo_dataset_preprocess_root,
+            project_scale=self.project_scale,
+            frustum_size=self.frustum_size,
+            fliplr=0.5,
+            color_jitter=(0.4, 0.4, 0.4),
+        )
+        
         self.train_ds = ConcatDataset([kitti360_train_ds, nuscenes_train_ds])
+        self.train_ds = ConcatDataset([kitti360_train_ds, waymo_train_ds])
+        self.train_ds = ConcatDataset([nuscenes_train_ds, waymo_train_ds])
 
         self.val_ds = Kitti360Dataset(
             split="val",
