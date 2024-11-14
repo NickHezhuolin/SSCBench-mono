@@ -58,5 +58,12 @@ class FLoSP(nn.Module):
                 self.scene_size[1] // self.project_scale,
                 self.scene_size[2] // self.project_scale,
             )
+        elif self.dataset == "mix_dataset":
+            x3d = src_feature.reshape(
+                c,
+                self.scene_size[0] // self.project_scale,
+                self.scene_size[1] // self.project_scale,
+                self.scene_size[2] // self.project_scale,
+            )
 
         return x3d

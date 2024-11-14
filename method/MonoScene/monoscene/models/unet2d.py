@@ -165,13 +165,15 @@ class UNet2D(nn.Module):
         return self.decoder.parameters()
 
     @classmethod
-    def build(self, cls, **kwargs):
-        if self.basemodel_name == "b4":
+    def build(cls, bs_name, **kwargs):
+        if bs_name == "b4":
             basemodel_name = "tf_efficientnet_b4_ns"
             num_features = 1792
-        if self.basemodel_name == "b7":
+        elif bs_name == "b7":
             basemodel_name = "tf_efficientnet_b7_ns"
             num_features = 2560
+        else:
+            raise ValueError(f"Unsupported basemodel_name: {basemodel_name}")
 
         print("Loading base model ()...".format(basemodel_name), end="")
         basemodel = torch.hub.load(
@@ -186,7 +188,7 @@ class UNet2D(nn.Module):
 
         # Building Encoder-Decoder model
         print("Building Encoder-Decoder model..", end="")
-        m = cls(basemodel, num_features=num_features, **kwargs)
+        m = cls(basemodel, num_features=num_features, basemodel_name=bs_name, **kwargs)
         print("Done.")
         return m
 

@@ -11,16 +11,16 @@ kitti_root: '/home/hez4sgh/data/shl/kitti'
 kitti_preprocess_root: '/home/hez4sgh/data/shl/kitti/dataset/preprocess/monoscene'
 kitti_logdir: '/home/hez4sgh/1_work_dir/SSCBench/method/MonoScene/logdir/kitti'
 
-kitti_360_root: '/data/dataset2/SSCBench/sscbench-kitti'
-kitti_360_preprocess_root: '/data/dataset2/SSCBench/sscbench-kitti/preprocess/unified'
+kitti_360_root: '/mnt/local_data/SSCBench/sscbench-kitti/'
+kitti_360_preprocess_root: '/mnt/local_data/SSCBench/sscbench-kitti/preprocess/unified'
 kitti_360_logdir: '/home/hez4sgh/1_work_dir/SSCBench/method/MonoScene/logdir/kitti360'
 
-nuscenes_root: '/data/dataset2/SSCBench/sscbench-nuscenes/'
-nuscenes_preprocess_root: '/data/dataset2/SSCBench/sscbench-nuscenes/preprocess_uni/'
+nuscenes_root: '/mnt/local_data/SSCBench/sscbench-nuscenes/'
+nuscenes_preprocess_root: '/mnt/local_data/SSCBench/sscbench-nuscenes/preprocess_uni'
 nuscenes_logdir: '/home/hez4sgh/1_work_dir/SSCBench/method/MonoScene/logdir/nuscenes'
 
-waymo_root: '/data/dataset2/SSCBench/sscbench-waymo/Waymo/sscbench-waymo'
-waymo_preprocess_root: '/data/dataset2/SSCBench/sscbench-waymo/Waymo/sscbench-waymo/preprocess/unified'
+waymo_root: '/mnt/local_data/SSCBench/sscbench-waymo/Waymo/sscbench-waymo/'
+waymo_preprocess_root: '/mnt/local_data/SSCBench/sscbench-waymo/Waymo/sscbench-waymo/preprocess/unified'
 waymo_logdir: '/home/hez4sgh/1_work_dir/SSCBench/method/MonoScene/logdir/waymo'
 
 NYU_root: '/path/to/NYU/depthbin'
@@ -31,10 +31,10 @@ output_path:  '/home/hez4sgh/1_work_dir/SSCBench/method/MonoScene'
 
 fp_loss: true 
 frustum_size: 8 
-batch_size: 8
+batch_size: 4
 n_gpus: 4
 num_workers_per_gpu: 8
-exp_prefix: "exp_1112_001_kw_right_cam"
+exp_prefix: "exp_1114_test"
 run: 1
 lr: 1e-4
 weight_decay: 1e-4 

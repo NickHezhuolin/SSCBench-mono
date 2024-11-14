@@ -206,7 +206,7 @@ class Kitti360Dataset(Dataset):
                 self.img_W,
                 self.img_H,
                 dataset="kitti",
-                n_classes=19,
+                n_classes=11,
                 size=self.frustum_size,
             )
         else:
